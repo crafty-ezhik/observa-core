@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: eventhub_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: eventhub
+      POSTGRES_PASSWORD: eventhubpass
+      POSTGRES_DB: eventhub_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./deploy/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - loki-compactor:/loki/compactor
+    command: -config.file=/etc/loki/loki-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail
+    volumes:
+      - ./deploy/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - ./logs:/var/log   # каталог, куда приложение пишет логи
+    command: -config.file=/etc/promtail/promtail-config.yaml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  eventhub_api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    container_name: eventhub_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - prometheus
+      - loki
+      - promtail
+    volumes:
+      - ./logs:/var/log
+    environment:
+      - CONFIG_PATH=/configs
+
+volumes:
+  pgdata:
+  grafana-storage:
+  loki-compactor:

@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+database:
+  host: postgres
+  port: 5432
+  user: user
+  password: password
+  dbname: eventhub
+  sslmode: disable
+
+redis:
+  addr: redis:6379
+
+logger:
+  level: info
+
+auth:
+  api_key_header: X-API-Key

@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+database:
+  host: localhost
+  port: 5432
+  user: user
+  password: password
+  dbname: eventhub
+  sslmode: disable
+
+redis:
+  addr: localhost:6379
+
+logger:
+  level: debug
+
+auth:
+  api_key_header: X-API-Key
