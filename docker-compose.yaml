@@ -2,13 +2,18 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
+    image: postgres:17
     container_name: eventhub_postgres
     restart: always
     environment:
-      POSTGRES_USER: eventhub
-      POSTGRES_PASSWORD: eventhubpass
-      POSTGRES_DB: eventhub_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD} 
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
     volumes:
@@ -55,22 +60,24 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER= ${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD= ${GRAFANA_PASSWORD}
     volumes:
       - grafana-storage:/var/lib/grafana
 
   eventhub_api:
+    image: backend_observa
     build:
       context: .
-      dockerfile: ./deploy/Dockerfile
     container_name: eventhub_api
     ports:
       - "8080:8080"
     depends_on:
+      - postgres
       - prometheus
       - loki
       - promtail
+
     volumes:
       - ./logs:/var/log
     environment:

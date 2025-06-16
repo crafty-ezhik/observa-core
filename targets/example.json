@@ -1,0 +1,9 @@
+[
+  {
+    "targets": ["ip:port", "example.com"],
+    "labels" : {
+      "env" : "production",
+      "team" : "backend"
+    }
+  }
+]

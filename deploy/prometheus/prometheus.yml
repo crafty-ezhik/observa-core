@@ -1,5 +1,6 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -9,3 +10,10 @@ scrape_configs:
   - job_name: 'eventhub'
     static_configs:
       - targets: ['eventhub_api:8080']  # Добавить сервис позже
+
+  - job_name: "dynamic-services"
+    file_sd_configs:
+      - names:
+          - '/etc/prometheus/targets/*.json'  # не забыть прокинуть volume в docker-compose
+        refresh_interval: 300s
+        # Подумать над необходимыми метками в json файле
