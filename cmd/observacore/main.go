@@ -9,5 +9,5 @@ func main() {
 	dep, appFiber := app.Bootstrap()
 	fmt.Println(dep.Db.Password)
 
-	appFiber.Listen(":3000")
+	appFiber.Listen(":8080")
 }
