@@ -5,18 +5,19 @@ services:
     image: postgres:17
     container_name: eventhub_postgres
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${APP_DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${APP_DATABASE_PASSWORD}
       POSTGRES_DB: ${APP_DATABASE_DATABASE}
-      PG_DATA: /var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     ports:
-      - "5432:5432"
+      - "5669:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
