@@ -1,17 +1,19 @@
 package registered_services
 
 import (
+	"errors"
 	"github.com/crafty-ezhik/observa-core/internal/domain/services"
 	"github.com/crafty-ezhik/observa-core/internal/repository"
 	"github.com/crafty-ezhik/observa-core/internal/utils"
 	"github.com/crafty-ezhik/observa-core/internal/validate"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"time"
 )
 
 type RegisteredServicesHandler interface {
-	Get(c *fiber.Ctx) error
+	GetAll(c *fiber.Ctx) error
 	Create(c *fiber.Ctx) error
 }
 
@@ -30,14 +32,29 @@ func NewRegisteredServicesHandler(regServiceRepo repository.RegisteredServicesRe
 	}
 }
 
-func (h *registeredServicesHandler) Get(c *fiber.Ctx) error {
-	return nil
+func (h *registeredServicesHandler) GetAll(c *fiber.Ctx) error {
+	result, err := h.RegServiceRepo.GetAllServices()
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Services not found",
+		})
+	}
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(result)
 }
 func (h *registeredServicesHandler) Create(c *fiber.Ctx) error {
 	h.log.Info("Запрос на создание сервиса")
 	body, err := utils.HandleBody[CreateRequest](c, h.v)
 	if err != nil {
 		h.log.Error("Failed to handle request", zap.Error(err))
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 	service := services.RegisteredServices{
 		Name:           body.Name,

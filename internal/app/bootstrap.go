@@ -39,6 +39,7 @@ func Bootstrap() (*config.Config, *fiber.App) {
 	app := fiber.New()
 	app.Route("service", func(router fiber.Router) {
 		router.Post("/", regServiceHandler.Create)
+		router.Get("/", regServiceHandler.GetAll)
 	})
 
 	return cfg, app

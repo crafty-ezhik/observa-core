@@ -8,6 +8,7 @@ import (
 
 type RegisteredServicesRepository interface {
 	GetService(id uint) (*services.RegisteredServices, error)
+	GetAllServices() (*[]services.RegisteredServices, error)
 	CreateService(service *services.RegisteredServices) error
 	UpdateService()
 	DeleteService()
@@ -33,6 +34,13 @@ func (r *regServicesRepository) GetService(id uint) (*services.RegisteredService
 	err := r.db.First(&result, "id = ?", id)
 	return &result, err.Error
 }
+
+func (r *regServicesRepository) GetAllServices() (*[]services.RegisteredServices, error) {
+	var result []services.RegisteredServices
+	err := r.db.Find(&result)
+	return &result, err.Error
+}
+
 func (r *regServicesRepository) CreateService(service *services.RegisteredServices) error {
 	return r.db.Create(service).Error
 
