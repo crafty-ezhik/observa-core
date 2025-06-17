@@ -6,9 +6,9 @@ services:
     container_name: eventhub_postgres
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${APP_DB_USER}
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD}
+      POSTGRES_DB: ${APP_DB_DATABASE}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -60,8 +60,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER= ${GRAFANA_USER}
-      - GF_SECURITY_ADMIN_PASSWORD= ${GRAFANA_PASSWORD}
+      - GF_SECURITY_ADMIN_USER=admin #${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=admin #${GRAFANA_PASSWORD}
     volumes:
       - grafana-storage:/var/lib/grafana
 

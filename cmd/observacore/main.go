@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"github.com/crafty-ezhik/observa-core/internal/app"
 )
 
 func main() {
-	for {
-		time.Sleep(time.Second)
-		fmt.Println(time.Now())
-	}
+	dep := app.Bootstrap()
+	fmt.Println(dep)
 
 }
