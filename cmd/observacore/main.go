@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	dep := app.Bootstrap()
-	fmt.Println(dep)
+	dep, appFiber := app.Bootstrap()
+	fmt.Println(dep.Db.Password)
 
+	appFiber.Listen(":3000")
 }

@@ -15,7 +15,7 @@ import (
 // Config - главная структура конфигурации приложения
 type Config struct {
 	Auth   AuthConfig   `mapstructure:"auth"`
-	Db     DBConfig     `mapstructure:"db"`
+	Db     DBConfig     `mapstructure:"database"`
 	Server ServerConfig `mapstructure:"server"`
 	Redis  RedisConfig  `mapstructure:"redis"`
 	Log    LogConfig    `mapstructure:"log"`
